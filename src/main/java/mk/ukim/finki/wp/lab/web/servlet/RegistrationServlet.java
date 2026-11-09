@@ -5,7 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import mk.ukim.finki.wp.lab.Service.RegistrationService;
+import mk.ukim.finki.wp.lab.service.RegistrationService;
 import mk.ukim.finki.wp.lab.model.Registration;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-@WebServlet(name = "RegistrationServlet", urlPatterns = "/registration")
+@WebServlet(name = "RegistrationServlet", urlPatterns = "/servlet/registration")
 public class RegistrationServlet extends HttpServlet {
     private final RegistrationService registrationService;
     private final SpringTemplateEngine springTemplateEngine;
@@ -24,6 +24,11 @@ public class RegistrationServlet extends HttpServlet {
     public RegistrationServlet(RegistrationService registrationService, SpringTemplateEngine springTemplateEngine) {
         this.registrationService = registrationService;
         this.springTemplateEngine = springTemplateEngine;
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.sendRedirect("/servlet/workshops");
     }
 
     @Override
@@ -52,7 +57,7 @@ public class RegistrationServlet extends HttpServlet {
         catch (IllegalArgumentException e) {
             String message = e.getMessage() != null ? e.getMessage() : "Choose a workshop";
             String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
-            resp.sendRedirect("/?errorMessage=" + encodedMessage);
+            resp.sendRedirect("/servlet/workshops?errorMessage=" + encodedMessage);
         }
     }
 }

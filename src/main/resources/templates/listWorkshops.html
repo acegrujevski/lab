@@ -1,78 +1,120 @@
-    <!DOCTYPE html>
-    <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="utf-8">
-        <title>Workshop Registration - Choose a Workshop</title>
-        <style type="text/css">
-            body {
-                width: 800px;
-                margin: auto;
-                font-family: Arial, sans-serif;
-            }
-            h1 {
-                color: #333;
-            }
-            form {
-                margin-top: 20px;
-            }
-            .workshop-option {
-                margin: 10px 0;
-                padding: 10px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-            }
-            .workshop-option:hover {
-                background-color: #f5f5f5;
-            }
-            .error {
-                color: red;
-            }
-        </style>
-    </head>
-    <body>
-    <header>
-        <h1>Welcome to our Workshop Registration App</h1>
-    </header>
-    <main>
-        <!-- Display the errorMessage here (only if it exists), using the "error" class -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Workshop Registration - Choose a Workshop</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <style type="text/css">
+        body {
+            width: 900px;
+            margin: auto;
+            font-family: Arial, sans-serif;
+            padding-bottom: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-top: 20px;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<main>
+    <div th:if="${errorMessage != null}" class="error alert alert-danger">
+        <p th:text="${errorMessage}" class="mb-0"></p>
+    </div>
 
-        <div th:if="${errorMessage != null}" class="error">
-            <p th:text="${errorMessage}"></p>
+    <!-- Search Form -->
+    <form action="/workshops" method="GET" class="border p-3 rounded bg-light">
+        <h2>Search workshops:</h2>
+        <div class="mb-3">
+            <label class="form-label">Title or category contains:</label>
+            <input type="text" name="text" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Max price:</label>
+            <input type="number" name="maxPrice" min="0" step="0.01" class="form-control">
+        </div>
+        <input type="submit" value="Search" class="btn btn-secondary">
+    </form>
+
+    <hr/>
+
+    <!-- Add New Workshop Button -->
+    <div class="my-3">
+        <a class="btn btn-primary" th:href="@{/workshops/workshop-form}">
+            <i class="bi bi-plus-lg"></i> Add new workshop
+        </a>
+    </div>
+
+    <!-- Workshops Management Table -->
+    <h2>Workshop Management</h2>
+    <table class="table table-striped align-middle border">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Capacity</th>
+            <th>Instructor</th>
+            <th class="text-end">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="workshop : ${workshops}">
+            <td th:text="${workshop.title}"></td>
+            <td th:text="${workshop.category}"></td>
+            <td th:text="${workshop.price}"></td>
+            <td th:text="${workshop.capacity}"></td>
+            <td th:text="${workshop.instructor != null ? workshop.instructor.name + ' ' + workshop.instructor.surname : 'No Instructor'}"></td>
+            <td class="text-end">
+                <a class="btn btn-sm btn-info" th:href="@{/workshops/workshop-form/{id}(id=${workshop.id})}">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <!-- Corrected form action syntax for delete -->
+                <form class="d-inline" th:action="@{/workshops/delete/{id}(id=${workshop.id})}" method="post">
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <hr/>
+
+    <!-- Registration Form -->
+    <form action="/registration" method="POST">
+        <h2>Choose a workshop:</h2>
+
+        <div class="workshop-option border p-2 mb-2 rounded" th:each="workshop : ${workshops}">
+            <input type="radio" name="workshopId" th:value="${workshop.id}" th:disabled="${workshop.capacity == 0}" required>
+            <label th:text="'Title: ' + ${workshop.title} + ', Category: ' + ${workshop.category} + ', Price: ' + ${workshop.price} + ' MKD, Free seats: ' + ${workshop.capacity} + ', Instructor: ' + (${workshop.instructor != null ? workshop.instructor.name + ' ' + workshop.instructor.surname : 'None'})"></label>
         </div>
 
-        <form action="/" method="GET">
-            <h2>Search workshops:</h2>
-            <label>Title or category contains:</label>
-            <input type="text" name="text">
-            <label>Max price:</label>
-            <input type="number" name="maxPrice" min="0" step="0.01">
-            <input type="submit" value="Search">
-        </form>
+        <h2 class="mt-4">Enter your information:</h2>
+        <div class="mb-3">
+            <label class="form-label">Your Name:</label>
+            <input type="text" name="participantName" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Your Email:</label>
+            <input type="email" name="participantEmail" class="form-control" required>
+        </div>
 
-        <form action="/registration" method="POST">
-            <h2>Choose a workshop:</h2>
-            <!-- Display a radio button for each workshop,
-                 the value should be the workshop title
-                 and the displayed text should be:
-                 Title: <title>, Category: <category>, Price: <price> MKD, Free seats: <capacity>
-                 Workshops with 0 free seats are shown, but their radio button is disabled -->
+        <h2>Choose number of seats:</h2>
+        <div class="mb-3">
+            <input type="number" name="numSeats" min="1" class="form-control" required>
+        </div>
 
-            <div class="workshop-option" th:each="workshop : ${workshops}">
-                <input type="radio" name="workshopTitle" th:value="${workshop.title}" th:disabled="${workshop.capacity == 0}">
-                <label th:text="'Title: ' + ${workshop.title} + ', Category: ' + ${workshop.category} + ', Price: ' + ${workshop.price} + ' MKD, Free seats: ' + ${workshop.capacity}"></label>
-            </div>
-
-            <h2>Enter your information:</h2>
-            <label>Your Name:</label>
-            <input type="text" name="participantName" required><br/>
-            <label>Your Email:</label>
-            <input type="email" name="participantEmail" required><br/>
-
-            <h2>Choose number of seats:</h2>
-            <input type="number" name="numSeats" min="1" required><br/>
-            <br/>
-            <input type="submit" value="Register">
-        </form>
-    </main>
-    </body>
-    </html>
+        <input type="submit" value="Register" class="btn btn-success">
+    </form>
+</main>
+</body>
+</html>

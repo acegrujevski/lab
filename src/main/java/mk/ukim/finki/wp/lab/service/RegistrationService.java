@@ -1,4 +1,4 @@
-package mk.ukim.finki.wp.lab.Service;
+package mk.ukim.finki.wp.lab.service;
 
 import mk.ukim.finki.wp.lab.model.Registration;
 

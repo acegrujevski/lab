@@ -17,16 +17,40 @@ public class InMemoryWorkshopRepository implements WorkshopRepository {
     }
 
     @Override
+    public Optional<Workshop> findById(Long id) {
+        return DataHolder.workshops.stream()
+                .filter(w -> w.getId() != null && w.getId().equals(id))
+                .findFirst();
+    }
+
+    @Override
     public Optional<Workshop> findByTitle(String title) {
-        return DataHolder.workshops.stream().
-                filter(w -> w.getTitle().equals(title)).findFirst();
+        return DataHolder.workshops.stream()
+                .filter(w -> w.getTitle().equals(title)).findFirst();
+    }
+
+    @Override
+    public Workshop save(Workshop workshop) {
+        if (workshop.getId() == null) {
+            workshop.setId((long) (Math.random() * 1000));
+        }
+        DataHolder.workshops.removeIf(w -> w.getId() != null && w.getId().equals(workshop.getId()));
+        DataHolder.workshops.add(workshop);
+        return workshop;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        DataHolder.workshops.removeIf(w -> w.getId() != null && w.getId().equals(id));
     }
 
     @Override
     public List<Workshop> search(String text, Double maxPrice) {
-        return DataHolder.workshops.stream().
-        filter(w -> ((text == null || text.isEmpty() || w.getTitle().toLowerCase().contains(text.toLowerCase()) || w.getCategory().toLowerCase().contains(text.toLowerCase()))
-                && (maxPrice == null || w.getPrice()<=maxPrice))).toList();
+        return DataHolder.workshops.stream()
+                .filter(w -> ((text == null || text.isEmpty() ||
+                        w.getTitle().toLowerCase().contains(text.toLowerCase()) ||
+                        w.getCategory().toLowerCase().contains(text.toLowerCase()))
+                        && (maxPrice == null || w.getPrice() <= maxPrice)))
+                .toList();
     }
-
 }

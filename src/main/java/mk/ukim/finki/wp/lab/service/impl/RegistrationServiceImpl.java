@@ -1,7 +1,6 @@
-package mk.ukim.finki.wp.lab.Service.impl;
+package mk.ukim.finki.wp.lab.service.impl;
 
-import mk.ukim.finki.wp.lab.Service.RegistrationService;
-import mk.ukim.finki.wp.lab.Service.WorkshopService;
+import mk.ukim.finki.wp.lab.service.RegistrationService;
 import mk.ukim.finki.wp.lab.model.Registration;
 import mk.ukim.finki.wp.lab.model.Workshop;
 import mk.ukim.finki.wp.lab.repository.RegistrationRepository;
@@ -23,7 +22,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     public Registration register(String workshopTitle, String participantName, String participantEmail, int numberOfSeats) {
         if (workshopTitle == null || workshopTitle.isEmpty() || participantName == null || participantName.isEmpty() || participantEmail == null || participantEmail.isEmpty() || numberOfSeats < 1){
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Invalid registration data");
         }
 
         Workshop workshop = workshopRepository.findByTitle(workshopTitle).orElseThrow(() -> new IllegalArgumentException("Workshop was not found"));

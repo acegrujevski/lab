@@ -7,6 +7,9 @@ import java.util.Optional;
 
 public interface WorkshopRepository {
     List<Workshop> findAll();
+    Optional<Workshop> findById(Long id);
     Optional<Workshop> findByTitle(String title);
+    Workshop save(Workshop workshop);
+    void deleteById(Long id);
     List<Workshop> search(String text, Double maxPrice);
 }

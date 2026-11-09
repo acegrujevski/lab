@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Workshop Form</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body>
+<main class="container my-4" style="max-width: 600px;">
+    <h1 class="mb-4" th:text="${workshop} ? 'Edit workshop' : 'Add new workshop'"></h1>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+            <form method="post" th:action="${workshop} ? @{/workshops/edit/{id}(id=${workshop.id})} : @{/workshops/add}">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" class="form-control" id="title" name="title"
+                           th:value="${workshop?.title}" required autofocus placeholder="Enter workshop title">
+                </div>
+
+                <div class="mb-3">
+                    <label for="category" class="form-label">Category</label>
+                    <input type="text" class="form-control" id="category" name="category"
+                           th:value="${workshop?.category}" required placeholder="Enter category">
+                </div>
+
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="price" name="price"
+                           th:value="${workshop?.price}" required placeholder="Enter price">
+                </div>
+
+                <div class="mb-3">
+                    <label for="capacity" class="form-label">Capacity</label>
+                    <input type="number" min="0" class="form-control" id="capacity" name="capacity"
+                           th:value="${workshop?.capacity}" required placeholder="Enter capacity">
+                </div>
+
+                <div class="mb-3">
+                    <label for="instructorId" class="form-label">Instructor</label>
+                    <select class="form-select" id="instructorId" name="instructorId" required>
+                        <option value="" disabled th:selected="${workshop == null}">Select instructor</option>
+                        <option th:each="instructor : ${instructors}"
+                                th:value="${instructor.id}"
+                                th:text="${instructor.name + ' ' + instructor.surname}"
+                                th:selected="${workshop?.instructor?.id == instructor.id}"></option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <a class="btn btn-secondary" th:href="@{/workshops}">Back</a>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
