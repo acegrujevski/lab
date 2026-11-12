@@ -12,7 +12,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Controller
-@RequestMapping("/workshops")
 public class WorkshopController {
     private final WorkshopService workshopService;
     private final InstructorService instructorService;
@@ -22,12 +21,7 @@ public class WorkshopController {
         this.instructorService = instructorService;
     }
 
-    @GetMapping("/")
-    public String redirectToWorkshops() {
-        return "redirect:/workshops";
-    }
-
-    @GetMapping
+    @GetMapping("/workshops")
     public String getWorkshopsPage(@RequestParam(required = false) String text,
                                    @RequestParam(required = false) Double maxPrice,
                                    @RequestParam(required = false) String errorMessage,
@@ -49,7 +43,7 @@ public class WorkshopController {
         return "listWorkshops";
     }
 
-    @PostMapping("/add")
+    @PostMapping("/workshops/add")
     public String saveWorkshop(@RequestParam String title,
                                @RequestParam String category,
                                @RequestParam Double price,
@@ -64,7 +58,7 @@ public class WorkshopController {
         }
     }
 
-    @PostMapping("/edit/{workshopId}")
+    @PostMapping("/workshops/edit/{workshopId}")
     public String editWorkshop(@PathVariable Long workshopId,
                                @RequestParam String title,
                                @RequestParam String category,
@@ -80,19 +74,19 @@ public class WorkshopController {
         }
     }
 
-    @PostMapping("/delete/{id}")
+    @PostMapping("/workshops/delete/{id}")
     public String deleteWorkshop(@PathVariable Long id) {
         workshopService.deleteById(id);
         return "redirect:/workshops";
     }
 
-    @GetMapping("/workshop-form")
+    @GetMapping("/workshops/workshop-form")
     public String getAddWorkshopPage(Model model) {
         model.addAttribute("instructors", instructorService.findAll());
         return "workshop-form";
     }
 
-    @GetMapping("/workshop-form/{id}")
+    @GetMapping("/workshops/workshop-form/{id}")
     public String getEditWorkshopForm(@PathVariable Long id, Model model) {
         if (workshopService.findById(id).isPresent()) {
             model.addAttribute("workshop", workshopService.findById(id).get());
